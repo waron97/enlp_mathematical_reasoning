@@ -3,11 +3,18 @@ from flask import Flask, render_template, request
 import os
 from dotenv import load_dotenv
 
+from arithmetic.MathPrompter.util import extract_prompt_info
+
 load_dotenv()
 
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 mp = MathPrompter(model="text-davinci-003", max_tries_validation=5, repeat=1)
+
+
+def is_sensible_prompt(p):
+    info = extract_prompt_info(p)
+    return len(info["vars"]) > 0
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -23,6 +30,8 @@ def webapp():
         elif not prompt:
             return render_template("index.html", result="Please enter a prompt", error=True)
         try:
+            if not is_sensible_prompt(prompt):
+                return render_template("index.html", result="MathPrompter could not identify your prompt as a calculation question.", error=True)
             result, meta = mp.prompt(prompt)
             if result is None:
                 return render_template("index.html", result="MathPrompter failed to process your prompt, or language model was unable to provide a parse-able solution.", error=True)
