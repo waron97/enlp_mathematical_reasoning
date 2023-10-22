@@ -1,4 +1,3 @@
-import json
 from arithmetic.dataset import get_multi_arith
 from arithmetic.MathPrompter import MathPrompter
 from arithmetic.util.progress import read_progress, write_progress
