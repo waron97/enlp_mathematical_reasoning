@@ -2,4 +2,4 @@ import os
 
 
 def setup_env():
-    os.makedirs("out/code", exist_ok=True)
+    os.makedirs("out", exist_ok=True)
