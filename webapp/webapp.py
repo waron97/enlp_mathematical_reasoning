@@ -18,7 +18,7 @@ def webapp():
         prompt = request.form["prompt"]
         password = request.form["password"]
 
-        if mode == "PROD" and password == admin_pwd:
+        if mode == "PROD" and password != admin_pwd:
             return render_template("index.html", result="Incorrect password", error=True)
         elif not prompt:
             return render_template("index.html", result="Please enter a prompt", error=True)
