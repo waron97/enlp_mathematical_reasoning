@@ -5,7 +5,13 @@ from .types import RawDataset
 
 
 def map_dataset(split) -> RawDataset:
-    return [{"question": item["sQuestion"], "final_answer": item["lSolutions"][0]} for item in split]
+    return [
+        {
+            "question": item["sQuestion"],
+            "final_answer": item["lSolutions"][0],
+            "index": int(item["iIndex"])
+        } for item in split
+    ]
 
 
 def get_multi_arith():

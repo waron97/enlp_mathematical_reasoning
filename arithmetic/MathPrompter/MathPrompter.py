@@ -1,3 +1,5 @@
+import copy
+from typing import Tuple
 from .types import MappedItem, PromptMeta
 from .util import extract_eval, extract_prompt_info, check_completion_convergence, eval_formula
 from .errors import NoResults, ValidationTriesExceeded
@@ -18,15 +20,21 @@ class MathPrompter:
 
         self._initial_meta: PromptMeta = {
             "n_calls": 0,
-            "duration": None
+            "duration": None,
+            "templates": [],
+            "answers": [],
+            "formulas": []
         }
 
         # reset after every prompt
-        self.prompt_meta = self._initial_meta
+        self._reset_meta()
 
-    def prompt(self, prompt: str) -> (float, PromptMeta):
-        self.prompt_meta = self._initial_meta
+    def prompt(self, prompt: str) -> Tuple[float, PromptMeta]:
+        self._reset_meta()
         prompt_info = extract_prompt_info(prompt)
+        self.prompt_meta["templates"] = [
+            prompt_info["template_python"], prompt_info["template_expression"]]
+
         results = []
 
         start = time.time()
@@ -38,22 +46,24 @@ class MathPrompter:
 
                 formula = extract_eval(
                     mapping_python, completion_type="python")
+                self.prompt_meta["formulas"].append(formula)
+
                 result = eval_formula(formula, prompt_info["original_values"])
                 results.append(result)
             except ValidationTriesExceeded:
-                print("ValidationTriesExceeded")
+                pass
             except:
                 pass
 
         print(results)
+        self.prompt_meta["duration"] = time.time() - start
+        self.prompt_meta["answers"] = results
 
         if len(results) == 0:
-            raise NoResults()
+            return None, self.prompt_meta
 
         results.sort(key=lambda x: results.count(x))
         results.reverse()
-
-        self.prompt_meta["duration"] = time.time() - start
 
         return results[0], self.prompt_meta
 
@@ -90,3 +100,6 @@ class MathPrompter:
     def _call_openai(self, prompt: str):
         self.prompt_meta["n_calls"] += 1
         return get_openai_completion(prompt)
+
+    def _reset_meta(self):
+        self.prompt_meta = copy.deepcopy(self._initial_meta)

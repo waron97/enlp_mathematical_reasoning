@@ -1,6 +1,7 @@
 import json
 from arithmetic.dataset import get_multi_arith
 from arithmetic.MathPrompter import MathPrompter
+from arithmetic.util.progress import read_progress, write_progress
 
 
 def run_experiment():
@@ -8,5 +9,26 @@ def run_experiment():
     mp = MathPrompter(model="text-davinci-003",
                       max_tries_validation=5, repeat=5)
 
-    sample = data[0]
-    result = mp.prompt(sample["question"])
+    progress = read_progress()
+    index = len(progress)
+
+    for i in range(index, len(data)):
+        sample = data[i]
+        try:
+            result, meta = mp.prompt(sample["question"])
+            progress.append({"result": result, "meta": meta, "source": sample})
+            write_progress(progress)
+        except:
+            progress.append({
+                "result": None,
+                "meta": None,
+                "source": sample
+            })
+
+    for item in progress:
+        if item["result"] is None:
+            is_correct = False
+        else:
+            predicted = item["result"]
+            answer = item["source"]["final_answer"]
+            is_correct = int(predicted) == int(answer)

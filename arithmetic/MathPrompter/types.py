@@ -12,3 +12,6 @@ class MappedItem(TypedDict):
 class PromptMeta(TypedDict):
     n_calls: int
     duration: float
+    answers: List[float]
+    formulas: List[str]
+    templates: List[str]
