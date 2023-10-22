@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/index.css" />
+    <title>MathPrompter</title>
+  </head>
+  <body>
+    <div class="form-container">
+      <h1>MathPrompter</h1>
+      <form class="form" action="/" method="POST">
+        <input
+          placeholder="Password ('PROD' mode only)"
+          type="text"
+          class="password input"
+          name="password"
+        />
+        <textarea
+          placeholder="Prompt"
+          type="text"
+          class="prompt input"
+          name="prompt"
+        ></textarea>
+        <button class="submit-btn" type="submit">Submit</button>
+      </form>
+
+      {% if result %} {% if error %}
+      <div class="result-box error">
+        <span class="result">{{result}}</span>
+      </div>
+      {% else %}
+      <div class="result-box">
+        <span class="result">{{result}}</span>
+        <span class="meta">
+          Model was prompted {{meta["n_calls"]}} times. Processing took {{
+          meta["duration"] | round(1) }} seconds.
+        </span>
+      </div>
+      {% endif %} {% endif %}
+    </div>
+  </body>
+</html>
