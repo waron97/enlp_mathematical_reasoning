@@ -23,7 +23,7 @@ class MathPrompter:
             "duration": None,
             "templates": [],
             "answers": [],
-            "formulas": []
+            "completions": []
         }
 
         # reset after every prompt
@@ -42,12 +42,13 @@ class MathPrompter:
 
         for _ in range(self.repeat):
             try:
-                mapping_python, _ = self.get_valid_mappings(
+                mapping_python, mapping_expression = self.get_valid_mappings(
                     prompt_info)
 
                 formula = extract_eval(
                     mapping_python, completion_type="python")
-                self.prompt_meta["formulas"].append(formula)
+                self.prompt_meta["completions"].append(
+                    [mapping_python, mapping_expression])
 
                 result = eval_formula(formula, prompt_info["original_values"])
                 results.append(result)

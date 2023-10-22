@@ -13,5 +13,5 @@ class PromptMeta(TypedDict):
     n_calls: int
     duration: float
     answers: List[float]
-    formulas: List[str]
+    completions: List[List[str]]
     templates: List[str]

@@ -2,6 +2,7 @@ import json
 from arithmetic.dataset import get_multi_arith
 from arithmetic.MathPrompter import MathPrompter
 from arithmetic.util.progress import read_progress, write_progress
+from tqdm import tqdm
 
 
 def run_experiment():
@@ -19,18 +20,22 @@ def run_experiment():
     else:
         print("Resuming experiment from previous progress at index", index)
 
-    for i in range(index, len(data)):
-        sample = data[i]
-        try:
-            result, meta = mp.prompt(sample["question"])
-            progress.append({"result": result, "meta": meta, "source": sample})
-            write_progress(progress)
-        except:
-            progress.append({
-                "result": None,
-                "meta": None,
-                "source": sample
-            })
+    with tqdm(total=len(data)) as pbar:
+        pbar.update(index)
+        for i in range(index, len(data)):
+            sample = data[i]
+            try:
+                result, meta = mp.prompt(sample["question"])
+                progress.append(
+                    {"result": result, "meta": meta, "source": sample})
+                write_progress(progress)
+            except:
+                progress.append({
+                    "result": None,
+                    "meta": None,
+                    "source": sample
+                })
+            pbar.update(1)
 
     for item in progress:
         if item["result"] is None:
