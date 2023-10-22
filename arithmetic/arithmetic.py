@@ -1,3 +1,4 @@
+import os
 from arithmetic.dataset import get_multi_arith
 from arithmetic.MathPrompter import MathPrompter
 from arithmetic.util.progress import read_progress, write_progress
@@ -6,8 +7,8 @@ from tqdm import tqdm
 
 def run_experiment():
     data = get_multi_arith()
-    mp = MathPrompter(model="text-davinci-003",
-                      max_tries_validation=5, repeat=5)
+    mp = MathPrompter(
+        max_tries_validation=5, repeat=5)
 
     progress = read_progress()
     index = len(progress)

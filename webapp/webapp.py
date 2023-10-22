@@ -9,7 +9,8 @@ load_dotenv()
 
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-mp = MathPrompter(model="text-davinci-003", max_tries_validation=5, repeat=1)
+mp = MathPrompter(
+    max_tries_validation=5, repeat=1)
 
 
 def is_sensible_prompt(p):

@@ -1,4 +1,5 @@
 import copy
+import os
 import time
 from typing import Tuple
 
@@ -11,13 +12,13 @@ from .util import (check_completion_convergence, eval_formula, extract_eval,
 
 
 class MathPrompter:
-    def __init__(self, model="text-davinci-003", max_tries_validation=5, repeat=5):
+    def __init__(self, max_tries_validation=5, repeat=5):
         """
         :param model: The OpenAI model to use
         :param max_tries_validation: The maximum number of tries to get a valid prompt
         :param repeat: The number of times to repeat the process (majority response is returned)
         """
-        self.model = model
+        self.model = os.getenv("OPENAI_MODEL")
         self.max_tries_validation = max_tries_validation
         self.repeat = repeat
 
@@ -106,7 +107,7 @@ class MathPrompter:
 
     def _call_openai(self, prompt: str):
         self.prompt_meta["n_calls"] += 1
-        return get_openai_completion(prompt)
+        return get_openai_completion(prompt, self.model)
 
     def _reset_meta(self):
         self.prompt_meta = copy.deepcopy(self._initial_meta)

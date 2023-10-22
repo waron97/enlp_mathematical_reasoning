@@ -16,7 +16,8 @@ def make_openai_request(url, data):
     return response.json()
 
 
-def get_openai_completion(prompt, model="text-davinci-003", n_completions=1):
+def get_openai_completion(prompt, model, n_completions=1):
+
     response = make_openai_request(
         "/completions",
         {
