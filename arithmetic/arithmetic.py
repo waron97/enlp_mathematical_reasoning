@@ -12,6 +12,13 @@ def run_experiment():
     progress = read_progress()
     index = len(progress)
 
+    if (index == 0):
+        print("No previous progress recorded - booting experiment")
+    elif (len(progress) == len(data)):
+        print("Experiment already completed, loading from previous data")
+    else:
+        print("Resuming experiment from previous progress at index", index)
+
     for i in range(index, len(data)):
         sample = data[i]
         try:

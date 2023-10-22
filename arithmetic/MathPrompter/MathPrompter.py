@@ -32,6 +32,7 @@ class MathPrompter:
     def prompt(self, prompt: str) -> Tuple[float, PromptMeta]:
         self._reset_meta()
         prompt_info = extract_prompt_info(prompt)
+
         self.prompt_meta["templates"] = [
             prompt_info["template_python"], prompt_info["template_expression"]]
 
@@ -55,7 +56,6 @@ class MathPrompter:
             except:
                 pass
 
-        print(results)
         self.prompt_meta["duration"] = time.time() - start
         self.prompt_meta["answers"] = results
 

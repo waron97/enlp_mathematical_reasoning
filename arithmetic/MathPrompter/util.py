@@ -28,10 +28,10 @@ def get_template_python(template: str) -> str:
 
 
 def get_template_from_question(question: str) -> (str, List[str], Dict[str, int]):
-    pat = re.compile(" \d+ ", re.MULTILINE)
+    pat = re.compile(" \d+ |^\d+ | \d+$| \d+\.", re.MULTILINE)
     matches = []
 
-    for m in pat.finditer(question):
+    for m in pat.finditer(question.strip()):
         start = m.start()
         end = m.end()
         string = question[start:end]
@@ -42,16 +42,19 @@ def get_template_from_question(question: str) -> (str, List[str], Dict[str, int]
     original_values = {}
     reduced_space = 0
 
-    for i in range(len(matches)):
-        start, end, string = matches[i]
+    for i in range((len(matches))):
+        match = matches[i]
+        start, end, string = match
         start = start - reduced_space
         end = end - reduced_space
         var = var_sequence[i]
+        digits = re.compile("\d+").findall(match[2])[0]
+        before, after = string.split(digits)
 
         vars.append(var)
-        template = template[:start] + f" {var} " + template[end:]
-        reduced_space += len(string.strip()) - len(var)
-        original_values[var] = int(string.strip())
+        template = template[:start] + f"{before}{var}{after}" + template[end:]
+        reduced_space += len(digits) - len(var)
+        original_values[var] = int(digits)
 
     vars_str = ", ".join([f"{var}: :{var}:" for var in vars])
     template += f"\n\nMapping: {{{vars_str}}}"
