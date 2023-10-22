@@ -14,4 +14,5 @@ class PromptMeta(TypedDict):
     duration: float
     answers: List[float]
     completions: List[List[str]]
+    discarded_completions: List[List[str]]
     templates: List[str]

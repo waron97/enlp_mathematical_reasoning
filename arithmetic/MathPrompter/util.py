@@ -56,8 +56,8 @@ def get_template_from_question(question: str) -> (str, List[str], Dict[str, int]
         reduced_space += len(digits) - len(var)
         original_values[var] = int(digits)
 
-    vars_str = ", ".join([f"{var}: :{var}:" for var in vars])
-    template += f"\n\nMapping: {{{vars_str}}}"
+    # vars_str = ", ".join([f"{var}: :{var}:" for var in vars])
+    # template += f"\n\nMapping: {{{vars_str}}}"
 
     return template, vars, original_values
 

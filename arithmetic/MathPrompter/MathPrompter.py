@@ -1,10 +1,13 @@
 import copy
-from typing import Tuple
-from .types import MappedItem, PromptMeta
-from .util import extract_eval, extract_prompt_info, check_completion_convergence, eval_formula
-from .errors import NoResults, ValidationTriesExceeded
-from arithmetic.util import get_openai_completion
 import time
+from typing import Tuple
+
+from arithmetic.util import get_openai_completion
+
+from .errors import NoResults, ValidationTriesExceeded
+from .types import MappedItem, PromptMeta
+from .util import (check_completion_convergence, eval_formula, extract_eval,
+                   extract_prompt_info)
 
 
 class MathPrompter:
@@ -23,7 +26,8 @@ class MathPrompter:
             "duration": None,
             "templates": [],
             "answers": [],
-            "completions": []
+            "completions": [],
+            "discarded_completions": [],
         }
 
         # reset after every prompt
@@ -52,10 +56,8 @@ class MathPrompter:
 
                 result = eval_formula(formula, prompt_info["original_values"])
                 results.append(result)
-            except ValidationTriesExceeded:
-                pass
-            except:
-                pass
+            except Exception as e:
+                print(e)
 
         self.prompt_meta["duration"] = time.time() - start
         self.prompt_meta["answers"] = results
@@ -79,6 +81,7 @@ class MathPrompter:
         while current_try < self.max_tries_validation:
             generated_python = self._call_openai(python)
             generated_expression = self._call_openai(expression)
+
             converge = check_completion_convergence(
                 generated_python,
                 generated_expression,
@@ -87,6 +90,9 @@ class MathPrompter:
 
             if converge:
                 break
+
+            self.prompt_meta["discarded_completions"].append(
+                [generated_python, generated_expression])
 
             current_try += 1
             generated_expression = None
