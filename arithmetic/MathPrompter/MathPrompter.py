@@ -57,8 +57,8 @@ class MathPrompter:
 
                 result = eval_formula(formula, prompt_info["original_values"])
                 results.append(result)
-            except Exception as e:
-                print(e)
+            except:
+                pass
 
         self.prompt_meta["duration"] = time.time() - start
         self.prompt_meta["answers"] = results
