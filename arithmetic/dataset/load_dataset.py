@@ -1,16 +1,14 @@
-import datasets
-from datasets import Dataset
+import json
+import os
 
-from .preprocess_dataset import preprocess_dataset
 from .types import RawDataset
 
 
-def map_dataset(split: Dataset) -> RawDataset:
-    return [{"question": item["question"], "final_answer": item["final_ans"]} for item in split]
+def map_dataset(split) -> RawDataset:
+    return [{"question": item["sQuestion"], "final_answer": item["lSolutions"][0]} for item in split]
 
 
 def get_multi_arith():
-    ds = datasets.load_dataset("ChilleD/MultiArith")
-    train, test = ds["train"], ds["test"]
-    train, test = map_dataset(train), map_dataset(test)
-    return preprocess_dataset(train), preprocess_dataset(test)
+    with open(os.path.join("data", "MultiArith.json"), "r") as f:
+        ds = json.load(f)
+        return map_dataset(ds)

@@ -1,4 +1,4 @@
-from typing import Dict, List, TypedDict
+from typing import List, TypedDict
 
 
 class SourceDatasetRow(TypedDict):
@@ -7,15 +7,3 @@ class SourceDatasetRow(TypedDict):
 
 
 RawDataset = List[SourceDatasetRow]
-
-
-class MappedItem(TypedDict):
-    question: str
-    final_answer: int
-    template_expression: str
-    template_python: str
-    vars: List[str]
-    original_values: Dict[str, int]
-
-
-MultiArithMapped = List[MappedItem]
