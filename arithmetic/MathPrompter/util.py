@@ -75,16 +75,21 @@ def extract_prompt_info(prompt: str) -> MappedItem:
     }
 
 
-def extract_eval(completion: str, completion_type="python"):
+def extract_eval(completion: str, completion_type="python", transform_integer_divison=False):
     if (completion_type == "python"):
         line = [line for line in completion.split(
             "\n") if "return " in line][0]
-        return line.replace("return ", "").strip()
+        line = line.replace("return ", "").strip()
 
     elif (completion_type == "expression"):
         line = [line for line in completion.split(
             "\n") if "Answer =" in line][0]
-        return line.replace("Answer =", "").strip()
+        line = line.replace("Answer =", "").strip()
+
+    if transform_integer_divison:
+        line = line.replace("//", "/")
+
+    return line
 
 
 def eval_formula(formula: str, vars: Dict[str, int]) -> float:
@@ -94,9 +99,11 @@ def eval_formula(formula: str, vars: Dict[str, int]) -> float:
     return round(float(eval(formula)), 2)
 
 
-def check_completion_convergence(python: str, expression: str, vars: List[str]) -> bool:
-    python_eval = extract_eval(python, "python")
-    expression_eval = extract_eval(expression, "expression")
+def check_completion_convergence(python: str, expression: str, vars: List[str], purge_integer_division=False) -> bool:
+    python_eval = extract_eval(
+        python, "python", transform_integer_divison=purge_integer_division)
+    expression_eval = extract_eval(
+        expression, "expression", transform_integer_divison=purge_integer_division)
     random_values = {
         var: random.randint(1, 100) for var in vars
     }
