@@ -18,6 +18,9 @@ p = os.path.join("out", "progress.json")
 
 
 def read_progress() -> Progress:
+    """
+    Load experiment progress from disk.
+    """
     if not os.path.exists(p):
         return []
     with open(p, "r") as f:
@@ -25,5 +28,8 @@ def read_progress() -> Progress:
 
 
 def write_progress(progress: Progress):
+    """
+    Write experiment progress to disk.
+    """
     with open(p, "w") as f:
         json.dump(progress, f, indent=2)

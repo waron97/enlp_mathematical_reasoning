@@ -1,11 +1,16 @@
 import json
 from typing import List
 from arithmetic.MathPrompter.util import check_completion_convergence, eval_formula, extract_eval, extract_prompt_info
-from arithmetic.util.progress import ProgressItem, read_progress
+from arithmetic.util.progress import Progress, ProgressItem, read_progress
 from arithmetic.util.util import get_most_frequent_item
 
 
-def revisit_null_responses(individual_check=False):
+def revisit_null_responses(individual_check=False) -> Progress:
+    """
+        Revisit questions where MultiArith failed to provide a question. 
+        If no configuration is specified, this only maps integer division to division.
+        If individual_check is True, this will also check answers ignoring completion convergence.
+    """
     progress = read_progress()
 
     revisited: List[ProgressItem] = []

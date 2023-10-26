@@ -8,6 +8,9 @@ from tqdm import tqdm
 
 
 def get_meta(predicted: Progress):
+    """
+    Compute average number of calls and average execution time.
+    """
     n_calls = []
     exec_time = 0
     for item in predicted:
@@ -19,6 +22,9 @@ def get_meta(predicted: Progress):
 
 
 def compute_results(predicted: Progress, gold: RawDataset):
+    """
+    Given a complete set of predictions and a gold dataset, compute the accuracy.
+    """
     total = len(gold)
     correct = 0
     for item in predicted:
@@ -38,6 +44,9 @@ def run_experiment():
     data = get_multi_arith()
     mp = MathPrompter(
         max_tries_validation=5, repeat=5)
+
+    # load progress from disk
+    # this makes this experiment resumable
 
     progress = read_progress()
     index = len(progress)

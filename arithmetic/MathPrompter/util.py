@@ -1,6 +1,8 @@
 
 from typing import Dict, List
 import re
+
+from regex import W
 from .types import MappedItem
 import random
 
@@ -20,14 +22,25 @@ var_sequence = [
 
 
 def get_template_expression(template: str) -> str:
+    """
+    Adds the 'mathematical expression' request to the template
+    """
     return template + "\nWrite a mathematical equation and generate the answer format starting with'Answer ='"
 
 
 def get_template_python(template: str) -> str:
+    """
+    Adds the 'Python function' request to the template
+    """
     return template + "\nWrite a Python function that returns the answer."
 
 
 def get_template_from_question(question: str) -> (str, List[str], Dict[str, int]):
+    """
+    Extracts the template from the question.
+    :param question: The question from which to extract information
+    :return: (template, vars, original_values), e.g. ("May has A apples and sells B apples", ["A", "B"], {"A": 5, "B": 3})
+    """
     pat = re.compile(" \d+ |^\d+ | \d+$| \d+\.", re.MULTILINE)
     matches = []
 
@@ -63,6 +76,11 @@ def get_template_from_question(question: str) -> (str, List[str], Dict[str, int]
 
 
 def extract_prompt_info(prompt: str) -> MappedItem:
+    """
+    Extract all required information for MathPrompter from a mathematical question.
+    :param prompt: The question to extract information from
+    :return: A dictionary containing all required information
+    """
     template, vars, original_values = get_template_from_question(
         prompt.strip())
 
@@ -76,6 +94,13 @@ def extract_prompt_info(prompt: str) -> MappedItem:
 
 
 def extract_eval(completion: str, completion_type="python", transform_integer_divison=False):
+    """
+    Extracts the formula to be passed to eval() from a completion.
+    :param completion: The completion to extract the formula from
+    :param completion_type: The type of completion, either 'python' or 'expression'
+    :param transform_integer_divison: Whether to transform integer division to float division
+    :return: The formula to be passed to eval()
+    """
     if (completion_type == "python"):
         line = [line for line in completion.split(
             "\n") if "return " in line][0]
@@ -93,6 +118,12 @@ def extract_eval(completion: str, completion_type="python", transform_integer_di
 
 
 def eval_formula(formula: str, vars: Dict[str, int]) -> float:
+    """
+    Evaluates a formula with the given variables.
+    :param formula: The formula to be evaluated
+    :param vars: The variables to be used in the formula
+    :return: The result of the formula or None if the formula is invalid
+    """
     for var in vars:
         formula = formula.replace(var, str(vars[var]))
 
@@ -112,6 +143,13 @@ def eval_formula(formula: str, vars: Dict[str, int]) -> float:
 
 
 def check_completion_convergence(python: str, expression: str, vars: List[str], purge_integer_division=False) -> bool:
+    """
+    Checks whether the instructions in the two completions converge to the same result.
+    :param python: The Python completion
+    :param expression: The expression completion
+    :param vars: The variables used in the completion
+    :param purge_integer_division: Whether to transform integer division to float division
+    """
     python_eval = extract_eval(
         python, "python", transform_integer_divison=purge_integer_division)
     expression_eval = extract_eval(

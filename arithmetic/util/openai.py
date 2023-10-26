@@ -3,6 +3,9 @@ import requests
 
 
 def make_openai_request(url, data):
+    """
+    Utility function to make a request to the OpenAI API.
+    """
     final_url = "https://api.openai.com/v1" + url
     token = os.environ.get("OPENAI_API_KEY")
     response = requests.post(
@@ -16,15 +19,17 @@ def make_openai_request(url, data):
     return response.json()
 
 
-def get_openai_completion(prompt, model, n_completions=1):
-
+def get_openai_completion(prompt, model):
+    """
+    Utility function to get a completion from the OpenAI API.
+    """
     response = make_openai_request(
         "/completions",
         {
             "prompt": prompt,
             "model": model,
             "max_tokens": 100,
-            "n": n_completions
+            "n": 1
         }
     )
 

@@ -13,9 +13,12 @@ from .util import (check_completion_convergence, eval_formula, extract_eval,
 
 
 class MathPrompter:
+    """
+    Class that encapsulates the MathPrompter prompting process
+    """
+
     def __init__(self, max_tries_validation=5, repeat=5):
         """
-        :param model: The OpenAI model to use
         :param max_tries_validation: The maximum number of tries to get a valid prompt
         :param repeat: The number of times to repeat the process (majority response is returned)
         """
@@ -36,6 +39,11 @@ class MathPrompter:
         self._reset_meta()
 
     def prompt(self, prompt: str) -> Tuple[float, PromptMeta]:
+        """
+        Use MathPrompter to get the solution to a math problem.
+        :param prompt: The math problem to solve
+        :return: The solution to the math problem and meta information about the process
+        """
         self._reset_meta()
         prompt_info = extract_prompt_info(prompt)
 
@@ -70,6 +78,9 @@ class MathPrompter:
         return get_most_frequent_item(results), self.prompt_meta
 
     def get_valid_mappings(self, prompt: MappedItem) -> (str, str):
+        """
+        Derive the Python and expression prompts from the mathematical question
+        """
         python = prompt["template_python"]
         expression = prompt["template_expression"]
 
@@ -104,8 +115,15 @@ class MathPrompter:
         return generated_python, generated_expression
 
     def _call_openai(self, prompt: str):
+        """
+        Call the OpenAI API to get a completion for a prompt.
+        Record meta information about the call.
+        """
         self.prompt_meta["n_calls"] += 1
         return get_openai_completion(prompt, self.model)
 
     def _reset_meta(self):
+        """
+        Reset the meta information to the initial state.
+        """
         self.prompt_meta = copy.deepcopy(self._initial_meta)
