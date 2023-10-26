@@ -40,6 +40,8 @@ def run_experiment():
 
     total = len(data)
     correct = 0
+    n_calls = []
+    exec_time = 0
 
     for item in progress:
         if item["result"] is None:
@@ -50,8 +52,13 @@ def run_experiment():
             is_correct = int(predicted) == int(answer)
         if is_correct:
             correct += 1
+        n_calls.append(item["meta"]["n_calls"])
+        exec_time += item["meta"]["duration"]
 
     print((correct / total) * 100)
+    print("Average number of calls:", sum(n_calls) / len(n_calls))
+    print("Average execution time:", exec_time / len(n_calls))
+
     progress_revisited = revisit_null_responses()
 
     correct = 0
