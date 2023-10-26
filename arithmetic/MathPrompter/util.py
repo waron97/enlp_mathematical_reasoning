@@ -96,7 +96,19 @@ def eval_formula(formula: str, vars: Dict[str, int]) -> float:
     for var in vars:
         formula = formula.replace(var, str(vars[var]))
 
-    return round(float(eval(formula)), 2)
+    ev = None
+    try:
+        ev = eval(formula)
+
+        # if ev isn't int or float
+        if not isinstance(ev, (int, float)):
+            ev = None
+        else:
+            ev = round(float(ev), 2)
+    except:
+        pass
+
+    return ev
 
 
 def check_completion_convergence(python: str, expression: str, vars: List[str], purge_integer_division=False) -> bool:

@@ -1,12 +1,14 @@
 import json
+from typing import List
 from arithmetic.MathPrompter.util import check_completion_convergence, eval_formula, extract_eval, extract_prompt_info
-from arithmetic.util.progress import read_progress
+from arithmetic.util.progress import ProgressItem, read_progress
+from arithmetic.util.util import get_most_frequent_item
 
 
-def revisit_null_responses():
+def revisit_null_responses(individual_check=False):
     progress = read_progress()
 
-    revisited = []
+    revisited: List[ProgressItem] = []
 
     for record in progress:
         if record["result"] is not None:
@@ -29,9 +31,7 @@ def revisit_null_responses():
                 pass
 
         if len(updated_results) > 0:
-            updated_results.sort(key=lambda x: updated_results.count(x))
-            updated_results.reverse()
-            record["result"] = updated_results[0]
+            record["result"] = get_most_frequent_item(updated_results)
             record["revisited"] = True
             revisited.append(record)
 
@@ -41,4 +41,41 @@ def revisit_null_responses():
     with open("out/revisited.json", "w") as f:
         json.dump(revisited, f, indent=4)
 
-    return revisited
+    if not individual_check:
+        return revisited
+
+    second_revisit: List[ProgressItem] = []
+
+    for record in revisited:
+        if record["result"] is not None:
+            second_revisit.append(record)
+            continue
+
+        results = []
+
+        for python, expression in record["meta"]["discarded_completions"]:
+            r = None
+            formula = extract_eval(
+                python, completion_type="python", transform_integer_divison=True)
+            r = eval_formula(formula, info["original_values"])
+
+            if r is None:
+                formula = extract_eval(
+                    expression, completion_type="expression", transform_integer_divison=True)
+                r = eval_formula(formula, info["original_values"])
+
+            if r is not None:
+                results.append(r)
+
+        if len(results) > 0:
+            maximum = get_most_frequent_item(results)
+            record["result"] = maximum
+            record["revisited"] = True
+            second_revisit.append(record)
+        else:
+            second_revisit.append(record)
+
+    with open("out/revisited2.json", "w") as f:
+        json.dump(second_revisit, f, indent=4)
+
+    return second_revisit

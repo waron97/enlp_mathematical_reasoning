@@ -4,6 +4,7 @@ import time
 from typing import Tuple
 
 from arithmetic.util import get_openai_completion
+from arithmetic.util.util import get_most_frequent_item
 
 from .errors import NoResults, ValidationTriesExceeded
 from .types import MappedItem, PromptMeta
@@ -66,10 +67,7 @@ class MathPrompter:
         if len(results) == 0:
             return None, self.prompt_meta
 
-        results.sort(key=lambda x: results.count(x))
-        results.reverse()
-
-        return results[0], self.prompt_meta
+        return get_most_frequent_item(results), self.prompt_meta
 
     def get_valid_mappings(self, prompt: MappedItem) -> (str, str):
         python = prompt["template_python"]
