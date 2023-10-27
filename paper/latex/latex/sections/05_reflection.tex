@@ -1,0 +1,15 @@
+\label{ref:reflection}
+
+Wrapping up on the issue of multiline Python solutions returned by the LLM, which were a discussion point at several points of this work, superficial analysis revealed that, at least in this experiment, not being able to gain results from them did not impact the results, since the corresponding simple mathematical formulations were also incorrect. This remains nonetheless a weak point of MathPrompter as it was described by \citealp{imani-etal-2023-mathprompter}, since defining solutions in a programming language naturally aligns with breaking complex problems down in more steps than a single return statement can cleanly encapsulate.
+
+Aside from mapping integer division to standard division, there are therefore no other low-hanging fruit that would allow to drive the reproduced accuracy closer to the reported accuracy of MathPrompter. 
+
+It is also a possibility that this is an effect of the "dumbening" of GPT models that has been generally reported by both the public and researchers \citep{chen2023chatgpts}. Though perhaps a factor, such a steep drop in task accuracy might be too big a difference to be attributed to this only - more likely, a combination of underlying model changes and some details having been overlooked in this reproduction attempt caused the difference in performance. It is, at any rate, not hard to imagine that a few minor improvements could get MathPrompter performance above 90\% - in this sense, this study can be understood as being a successful replication attempt.
+
+In addition to the original paper, this study also measured two other factors: average number of LM prompts made per question, and average question execution time. While real-world scenarios might do without the amount of re-prompting that was done in this experiment, it is still relevant to know for real-world use cases what number of API calls might be made in the standard case. 
+
+For the average number calls, the measured value was 30.06. While 30 model prompts per question is exceedingly high, it is worth considering that real-world scenarios might not be set up in a way that allows up to 50 API calls for a single question (which was the case in this study). Still, developers should be careful when using MathPrompter by setting up proper exit conditions, in case the model fails to output a well-formed solution - at least within a reasonable number of attempts.
+
+Average execution time for questions was 26.84 seconds in this experiment. As before, real-world implementations might be set up to exit earlier in case of failure to generate a valid result, bringing this number to a more manageable range. It is however paramount that proper attention is payed to balancing execution time and quality, since waiting 26 seconds on average for a prompt is too slow even for LLM standards.
+
+Lastly, addressing the lack of an interactive application with which to test out MathPrompter has also been the target of this experiment. The Github repository contains instructions for how to set up such an environment.

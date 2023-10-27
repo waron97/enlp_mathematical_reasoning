@@ -1,0 +1,18 @@
+\label{sec:intro}
+
+Since their introduction to NLP and their swift increase in popularity in recent years, Large Language Models (LLMs) have been applied to a wide set of domains. Due to their affinity with zero- and few-shot learning contexts \citep{brown2020language}, LLMs have been experimented with in the context of mathematical problems defined in natural language, with varying degrees of success. 
+
+LLMs have been observed to struggle even with simple arithmetic when they saw large popularity and availability with GPT3 through ChatGPT\footnote{\url{https://openai.com/}}. When prompted with a mathematical question, the model would often dream up an incorrect solution, even when to a human the task would have seemed trivial. More quantitative evaluations of the phenomenon have been carried out as well.
+
+The MultiArith dataset \citep{roy-roth-2015-solving} has been used in various studies for the purposes of gauging the performance of LLMs and associated prompting strategies on simple arithmetic problems. It provides simple mathematical exercises and the solutions to them, with all solutions consisting of a single integer. LLMs have had their mathematical prowess evaluated on the dataset, however zero-shot techniques have been reported to only achieve around 17\% accuracy on the dataset \citep{kojima2023large}. Such results lend credence to the impression that LLMs struggle greatly when tasked with mathematical reasoning, at least in a zero-shot setting.
+
+\citealp{kojima2023large} contributed a chain-of-though (CoT) approach to formulating mathematical prompts, which breaks down the problem into a series of intermediate steps via an ingenius double-prompting strategy:
+
+\begin{enumerate}
+    \item The LLM is promted with the mathimatical problem, and the task to break it down into intermediate steps
+    \item The LLM is prompted again with the intermediate steps from the previous stem, and the task of computing the answer
+\end{enumerate}
+
+This simple process of separating the task into two distinct steps (labelled "reasoining extraction" and "answer extraction" in the original) boosts accuracy over MultiArith to 53\%. 
+
+\citealp{imani-etal-2023-mathprompter} improved further, reaching as far as 92.5\% accuracy on MultiArith. Though some of this is likely due to a model upgrade (\citealp{kojima2023large} used OpenAI's \emph{text-davinic-002}, while \citealp{imani-etal-2023-mathprompter} used \emph{text-davinci-003}, which is itself of obsolete at the writing of this report), much of the increase is likely due to the new strategy being employed.

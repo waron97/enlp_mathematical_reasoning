@@ -1,0 +1,31 @@
+\label{sec:mp}
+
+The improvement in accuracy over previous studies was achieved with MathPrompter \citep{imani-etal-2023-mathprompter}, a system that shares some similarities with CoT prompting, but forgoes attempting to get a direct solution from the model. MathPrompter's execution steps can be broken down as follows:
+
+\begin{enumerate}
+    \item MathPrompter receives a question Q as input, then maps it to a new prompt Qt, resulting from Q having its numeric values mapped to variables. For example \emph{"May has 10 apples, but sells 5. How many apples does May have now?"} becomes \emph{"May has A apples, but sells B. How many apples does May have now?"} The original variable values \{A: 10, B: 5\} are also recorded.
+
+    \item Qt is mapped to two prompts (P1, P2) to be forwarded to the LLM, one eliciting a python function and the other a mathematical expression:
+
+    
+    P1: "\{Qt\} Write a mathematical equation and generate the answer format starting with `Answer = `"
+
+    P2: "\{Qt\} Write a python function that returns the answer"
+
+    \item The underlying LLM is prompted with P1 and P2 individually, returning (hopefully) something along the lines of
+
+\begin{verbatim}
+def foo(A, B):
+    return A - B
+\end{verbatim}
+
+    for the Python-function prompt.
+
+    \item The LLM completions are passed to Python's \emph{eval} method, with the problem variables initialized to random values. If both prompt completions yield the same result for the same random values, then the completion is accepted.
+
+    \item The accepted solution from step 4 is again used with \emph{eval}, with the problem variables set to the original values (\{A: 10, B: 5\} from step 1). The whole process is repeated 5 times, i.e. MathPrompter computes 5 "accepted" results, and reports the majority solution to the user.
+
+\end{enumerate}
+
+A flowchart of MathPrompter can be viewed in the original paper for a more easy-to-digest representation.
+
